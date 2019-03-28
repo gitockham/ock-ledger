@@ -20,7 +20,7 @@ $(error Environment variable BOLOS_SDK is not set)
 endif
 include $(BOLOS_SDK)/Makefile.defines
 
-APPNAME = Ark
+APPNAME = Ockham
 APP_LOAD_PARAMS=--appFlags 0x40 --curve secp256k1 --path "44'/111'" --path "44'/1'" $(COMMON_LOAD_PARAMS)
 
 APPVERSION_M=0
@@ -30,7 +30,7 @@ APPVERSION=$(APPVERSION_M).$(APPVERSION_N).$(APPVERSION_P)
 
 #prepare hsm generation
 ifeq ($(TARGET_NAME),TARGET_BLUE)
-ICONNAME=app_ark.gif
+ICONNAME=app_ock.gif
 else
 ICONNAME=icon.gif
 endif
@@ -99,5 +99,4 @@ dep/%.d: %.c Makefile.genericwallet
 
 
 listvariants:
-	@echo VARIANTS COIN ark
-
+	@echo VARIANTS COIN ock

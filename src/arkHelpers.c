@@ -1,5 +1,5 @@
 /*******************************************************************************
-*   Ark Wallet
+*   OCKHAM Hardware Wallet
 *   (c) 2017 Ledger
 *
 *  Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,11 +15,11 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#include "arkHelpers.h"
-#include "arkBase58.h"
+#include "ockHelpers.h"
+#include "ockBase58.h"
 #include <stdbool.h>
 
-void ark_public_key_hash160(unsigned char WIDE *in, unsigned short inlen,
+void ock_public_key_hash160(unsigned char WIDE *in, unsigned short inlen,
                             unsigned char *out) {
     union {
         cx_sha256_t shasha;
@@ -30,7 +30,7 @@ void ark_public_key_hash160(unsigned char WIDE *in, unsigned short inlen,
     cx_hash(&u.riprip.header, CX_LAST, in, inlen, out);
 }
 
-unsigned short ark_public_key_to_encoded_base58(unsigned char WIDE *in,
+unsigned short ock_public_key_to_encoded_base58(unsigned char WIDE *in,
                                                 unsigned short inlen,
                                                 unsigned char *out,
                                                 unsigned short outlen,
@@ -49,7 +49,7 @@ unsigned short ark_public_key_to_encoded_base58(unsigned char WIDE *in,
     }
 
     if (!alreadyHashed) {
-        ark_public_key_hash160(in, inlen, tmpBuffer + versionSize);
+        ock_public_key_hash160(in, inlen, tmpBuffer + versionSize);
     } else {
         os_memmove(tmpBuffer + versionSize, in + versionSize, 20);
     }
@@ -60,10 +60,10 @@ unsigned short ark_public_key_to_encoded_base58(unsigned char WIDE *in,
     cx_hash(&hash.header, CX_LAST, checksumBuffer, 32, checksumBuffer);
 
     os_memmove(tmpBuffer + 20 + versionSize, checksumBuffer, 4);
-    return ark_encode_base58(tmpBuffer, 24 + versionSize, out, outlen);
+    return ock_encode_base58(tmpBuffer, 24 + versionSize, out, outlen);
 }
 
-unsigned short ark_address_to_encoded_base58(unsigned char WIDE *in,
+unsigned short ock_address_to_encoded_base58(unsigned char WIDE *in,
                                                 unsigned short inlen,
                                                 unsigned char *out,
                                                 unsigned short outlen) {
@@ -77,16 +77,16 @@ unsigned short ark_address_to_encoded_base58(unsigned char WIDE *in,
     cx_hash(&hash.header, CX_LAST, checksumBuffer, 32, checksumBuffer);
 
     os_memmove(tmpBuffer + inlen, checksumBuffer, 4);
-    return ark_encode_base58(tmpBuffer, inlen + 4, out, outlen);
+    return ock_encode_base58(tmpBuffer, inlen + 4, out, outlen);
 }
 
-unsigned short ark_decode_base58_address(unsigned char WIDE *in,
+unsigned short ock_decode_base58_address(unsigned char WIDE *in,
                                          unsigned short inlen,
                                          unsigned char *out,
                                          unsigned short outlen) {
     unsigned char hashBuffer[32];
     cx_sha256_t hash;
-    outlen = ark_decode_base58(in, inlen, out, outlen);
+    outlen = ock_decode_base58(in, inlen, out, outlen);
 
     // Compute hash to verify address
     cx_sha256_init(&hash);
@@ -101,7 +101,7 @@ unsigned short ark_decode_base58_address(unsigned char WIDE *in,
     return outlen;
 }
 
-unsigned short ark_compress_public_key(cx_ecfp_public_key_t *publicKey,
+unsigned short ock_compress_public_key(cx_ecfp_public_key_t *publicKey,
                                        uint8_t *out, uint32_t outlen) {
     if (outlen < 33) {
         THROW(EXCEPTION_OVERFLOW);
@@ -125,7 +125,7 @@ unsigned short ark_compress_public_key(cx_ecfp_public_key_t *publicKey,
 }
 
 #if 0
-unsigned short ark_print_amount(uint64_t amount, uint8_t *out, uint32_t outlen) {
+unsigned short ock_print_amount(uint64_t amount, uint8_t *out, uint32_t outlen) {
     uint64_t partInt;
     uint64_t partDecimal;
     partInt = amount / 1000000;
@@ -209,7 +209,7 @@ bool adjustDecimals(char *src, uint32_t srcLength, char *target,
     return true;
 }
 
-unsigned short ark_print_amount(uint64_t amount, uint8_t *out,
+unsigned short ock_print_amount(uint64_t amount, uint8_t *out,
                                 uint32_t outlen) {
     char tmp[20];
     char tmp2[25];
@@ -228,7 +228,7 @@ unsigned short ark_print_amount(uint64_t amount, uint8_t *out,
         base /= 10;
     }
     tmp[i] = '\0';
-    strcpy(tmp2, "ARK ");
+    strcpy(tmp2, "OCK ");
     adjustDecimals(tmp, i, tmp2 + 4, 25, 8);
     if (strlen(tmp2) < outlen - 1) {
         strcpy(out, tmp2);

@@ -1,6 +1,6 @@
-# ARK Ledger
+# OCKHAM Ledger
 
-> Ark wallet application for Ledger Blue and Nano S
+> OCKHAM wallet application for Ledger Blue and Nano S
 
 [![License: MIT](https://badgen.now.sh/badge/license/MIT/green)](https://opensource.org/licenses/MIT)
 
@@ -11,7 +11,7 @@ Under development
 - Install ledger vagrant https://github.com/fix/ledger-vagrant
 - Clone this repo under `apps/`
 - Connect to the vagrant machine `vagrant ssh`
-- Move to the app `cd apps/ark-ledger`
+- Move to the app `cd apps/ock-ledger`
 - Connect your ledger Nano S
 - Install the app `sh ./rebuild.sh` (ie. build, delete and load app on ledger)
 
@@ -30,7 +30,7 @@ Under development
 
 ## Security
 
-If you discover a security vulnerability within this application, please send an e-mail to security@ark.io. All security vulnerabilities will be promptly addressed.
+If you discover a security vulnerability within this application, please send an e-mail to security@ockham.consulting. All security vulnerabilities will be promptly addressed.
 
 ## Credits
 
@@ -39,4 +39,4 @@ If you discover a security vulnerability within this application, please send an
 
 ## License
 
-[MIT](LICENSE) © [ArkEcosystem](https://ark.io)
+[MIT](LICENSE) © [OCKHAM CONSULTING INSTITUTE](https://ockham.consulting)

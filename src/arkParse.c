@@ -1,5 +1,5 @@
 /*******************************************************************************
-*   Ark Wallet
+*   OCKHAM Hardware Wallet
 *   (c) 2017 Ledger
 *
 *  Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,7 +15,7 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#include "arkParse.h"
+#include "ockParse.h"
 
 parserStatus_e parseTxInternal(uint8_t *data, uint32_t length, txContent_t *context) {
     // type: byte / 0
@@ -46,14 +46,14 @@ parserStatus_e parseTxInternal(uint8_t *data, uint32_t length, txContent_t *cont
     // asset, meaning depending on type:
     context->assetlength = length-139;
     context->assetOffset = 139;
-    
+
     // 0: transfer -> no asset
     if(context->type == 0){
       if(context->assetlength != 0) return USTREAM_FAULT;
     }
     // 1: second signature -> publicKey (of the secondsignature) 139..171
     else if(context->type == 1){
-      if(context->assetlength != 33) return USTREAM_FAULT;      
+      if(context->assetlength != 33) return USTREAM_FAULT;
       //os_memmove(context->asset, data + 139, 33);
     }
     // 2: delegate registration -> username serialized in utf8

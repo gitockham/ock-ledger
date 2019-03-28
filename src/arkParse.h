@@ -1,5 +1,5 @@
 /*******************************************************************************
-*   Ark Wallet
+*   OCKHAM Hardware Wallet
 *   (c) 2017 Ledger
 *
 *  Licensed under the Apache License, Version 2.0 (the "License");
@@ -33,7 +33,7 @@ typedef enum parserStatus_e {
 } parserStatus_e;
 
 typedef struct txContent_t {
-    uint8_t type;    
+    uint8_t type;
     uint8_t voteSize;
     uint32_t timestamp;
     uint8_t senderPublicKey[33];

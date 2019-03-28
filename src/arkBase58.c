@@ -1,5 +1,5 @@
 /*******************************************************************************
-*   Ark Wallet
+*   OCKHAM Hardware Wallet
 *   (c) 2017 Ledger
 *
 *  Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,7 +15,7 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#include "arkBase58.h"
+#include "ockBase58.h"
 
 unsigned char const BASE58TABLE[] = {
     0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
@@ -39,7 +39,7 @@ unsigned char const BASE58ALPHABET[] = {
   };
 
 
-unsigned char ark_decode_base58(unsigned char WIDE *in, unsigned char length,
+unsigned char ock_decode_base58(unsigned char WIDE *in, unsigned char length,
                                 unsigned char *out, unsigned char maxoutlen) {
     unsigned char tmp[164];
     unsigned char buffer[164];
@@ -90,7 +90,7 @@ unsigned char ark_decode_base58(unsigned char WIDE *in, unsigned char length,
     return length;
 }
 
-unsigned char ark_encode_base58(unsigned char WIDE *in, unsigned char length,
+unsigned char ock_encode_base58(unsigned char WIDE *in, unsigned char length,
                                 unsigned char *out, unsigned char maxoutlen) {
     unsigned char tmp[164];
     unsigned char buffer[164];

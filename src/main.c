@@ -1,5 +1,5 @@
 /*******************************************************************************
-*   Ark Wallet
+*   OCKHAM hardware Wallet
 *   (c) 2017 Ledger
 *
 *  Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,8 +18,8 @@
 #include "os.h"
 #include "cx.h"
 #include <stdbool.h>
-#include "arkParse.h"
-#include "arkHelpers.h"
+#include "ockParse.h"
+#include "ockHelpers.h"
 
 #include "os_io_seproxyhal.h"
 #include "string.h"
@@ -135,7 +135,7 @@ const ux_menu_entry_t menu_about[] = {
     UX_MENU_END};
 
 const ux_menu_entry_t menu_main[] = {
-    {NULL, NULL, 0, &C_icon_ark, "Use wallet to", "view accounts", 33, 12},
+    {NULL, NULL, 0, &C_icon_ock, "Use wallet to", "view accounts", 33, 12},
     {menu_about, NULL, 0, NULL, "About", NULL, 0, 0},
     {NULL, os_sched_exit, 0, &C_icon_dashboard, "Quit app", NULL, 50, 29},
     UX_MENU_END};
@@ -363,14 +363,14 @@ unsigned int ui_approval_prepro(const bagl_element_t *element) {
                             strcpy(fullAmount, "Transfer");
                             goto display_transfer;
                         case 1: // Destination
-                            addressLength = ark_public_key_to_encoded_base58(txContent.recipientId, 21, fullAddress, sizeof(fullAddress), txContent.recipientId[0], 1);
+                            addressLength = ock_public_key_to_encoded_base58(txContent.recipientId, 21, fullAddress, sizeof(fullAddress), txContent.recipientId[0], 1);
                             fullAddress[addressLength] = '\0';
                             goto display_transfer;
                         case 2: // Amount
-                            ark_print_amount(txContent.amount, fullAmount, sizeof(fullAmount));
+                            ock_print_amount(txContent.amount, fullAmount, sizeof(fullAmount));
                             goto display_transfer;
                         case 3: // fees
-                            ark_print_amount(txContent.fee, fullAmount, sizeof(fullAmount));
+                            ock_print_amount(txContent.fee, fullAmount, sizeof(fullAmount));
                             display_transfer:
                             tmp_element.text = ui_approval_transfer[display][(element->component.userid)>>4];
                             break;
@@ -387,10 +387,10 @@ unsigned int ui_approval_prepro(const bagl_element_t *element) {
                             fullAddress[67] = '\0';
                             goto display_vote1;
                         case 2: // fees
-                            ark_print_amount(txContent.fee, fullAmount, sizeof(fullAmount));
+                            ock_print_amount(txContent.fee, fullAmount, sizeof(fullAmount));
                             display_vote1:
                             tmp_element.text = ui_approval_vote1[display][(element->component.userid)>>4];
-                            break;                    
+                            break;
                     }
                 }
                 else
@@ -406,12 +406,12 @@ unsigned int ui_approval_prepro(const bagl_element_t *element) {
                         case 2: // Vote 2
                             os_memmove(fullAddress, tmpCtx.transactionContext.rawTx + txContent.assetOffset + 67, 67);
                             fullAddress[67] = '\0';
-                            goto display_vote2;                            
+                            goto display_vote2;
                         case 3: // fees
-                            ark_print_amount(txContent.fee, fullAmount, sizeof(fullAmount));
+                            ock_print_amount(txContent.fee, fullAmount, sizeof(fullAmount));
                             display_vote2:
                             tmp_element.text = ui_approval_vote2[display][(element->component.userid)>>4];
-                            break;                    
+                            break;
                     }
                 }
 
@@ -497,16 +497,16 @@ unsigned int io_seproxyhal_touch_tx_ok(const bagl_element_t *e) {
         cx_hash(&localHash.header, CX_LAST, tmpCtx.transactionContext.rawTx, tmpCtx.transactionContext.rawTxLength, finalhash);
 #if CX_APILEVEL >= 8
         tx = cx_ecdsa_sign(&privateKey, CX_RND_RFC6979 | CX_LAST, CX_SHA256, finalhash, sizeof(finalhash), G_io_apdu_buffer, NULL);
-#else        
+#else
         tx = cx_ecdsa_sign(&privateKey, CX_RND_RFC6979 | CX_LAST, CX_SHA256, finalhash, sizeof(finalhash), G_io_apdu_buffer);
         G_io_apdu_buffer[0] = 0x30;
-#endif        
+#endif
     } else {
 #if CX_APILEVEL >= 8
         tx = cx_eddsa_sign(&privateKey, CX_LAST, CX_SHA512, tmpCtx.transactionContext.rawTx, tmpCtx.transactionContext.rawTxLength, NULL, 0, G_io_apdu_buffer, NULL);
-#else        
+#else
         tx = cx_eddsa_sign(&privateKey, NULL, CX_LAST, CX_SHA512, tmpCtx.transactionContext.rawTx, tmpCtx.transactionContext.rawTxLength, G_io_apdu_buffer);
-#endif        
+#endif
     }
 
     os_memset(&privateKey, 0, sizeof(privateKey));
@@ -582,7 +582,7 @@ uint32_t set_result_get_publicKey() {
     uint32_t tx = 0;
     uint32_t addressLength = strlen(tmpCtx.publicKeyContext.address);
     G_io_apdu_buffer[tx++] = 33;
-    ark_compress_public_key(&tmpCtx.publicKeyContext.publicKey,
+    ock_compress_public_key(&tmpCtx.publicKeyContext.publicKey,
                             G_io_apdu_buffer + tx, 33);
     tx += 33;
     G_io_apdu_buffer[tx++] = addressLength;
@@ -644,9 +644,9 @@ void handleGetPublicKey(uint8_t p1, uint8_t p2, uint8_t *dataBuffer,
                           &privateKey, 1);
     os_memset(&privateKey, 0, sizeof(privateKey));
     os_memset(privateKeyData, 0, sizeof(privateKeyData));
-    ark_compress_public_key(&tmpCtx.publicKeyContext.publicKey, privateKeyData,
+    ock_compress_public_key(&tmpCtx.publicKeyContext.publicKey, privateKeyData,
                             33);
-    addressLength = ark_public_key_to_encoded_base58(
+    addressLength = ock_public_key_to_encoded_base58(
         privateKeyData, 33, tmpCtx.publicKeyContext.address,
         sizeof(tmpCtx.publicKeyContext.address), 23, 0);
     tmpCtx.publicKeyContext.address[addressLength] = '\0';
@@ -709,7 +709,7 @@ void handleSign(uint8_t p1, uint8_t p2, uint8_t *workBuffer,
         }
         tmpCtx.transactionContext.curve =
             (((p2 & P2_ED25519) != 0) ? CX_CURVE_Ed25519 : CX_CURVE_256K1);
-    } else 
+    } else
     if (p1 != P1_MORE) {
         THROW(0x6B00);
     }
@@ -731,10 +731,10 @@ void handleSign(uint8_t p1, uint8_t p2, uint8_t *workBuffer,
         THROW(0x9000);
     }
 
-    if (parseTx(tmpCtx.transactionContext.rawTx, tmpCtx.transactionContext.rawTxLength, &txContent) != USTREAM_FINISHED) {        
+    if (parseTx(tmpCtx.transactionContext.rawTx, tmpCtx.transactionContext.rawTxLength, &txContent) != USTREAM_FINISHED) {
         THROW(0x6A80);
     }
-    //ark_print_amount(txContent.amount + txContent.fee, fullAmount, sizeof(fullAmount));
+    //ock_print_amount(txContent.amount + txContent.fee, fullAmount, sizeof(fullAmount));
 
 #if defined(TARGET_NANOS)
     //os_memset(addressSummary, 0, addressLength);
@@ -761,13 +761,13 @@ void handleSign(uint8_t p1, uint8_t p2, uint8_t *workBuffer,
         ux_step_count = 5;
     }
     else
-    if ((txContent.type == OPERATION_TYPE_VOTE) && (txContent.voteSize == 1)) {    
+    if ((txContent.type == OPERATION_TYPE_VOTE) && (txContent.voteSize == 1)) {
         ux_step_count = 4;
     }
     else
-    if ((txContent.type == OPERATION_TYPE_VOTE) && (txContent.voteSize == 2)) {    
+    if ((txContent.type == OPERATION_TYPE_VOTE) && (txContent.voteSize == 2)) {
         ux_step_count = 5;
-    }        
+    }
     // if (txContent.sourceTagPresent) {
     //     ux_step_count++;
     // }
